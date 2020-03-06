@@ -4,16 +4,15 @@ import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
+import android.content.ContentValues.TAG
 import android.graphics.Color
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.firebase.messaging.RemoteMessage
+import com.knoxpo.handle_firebase_notification.HandleFirebaseNotificationPlugin.Companion.ACTION_RESUME
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -106,13 +105,13 @@ class HandleFirebaseNotificationPlugin : FlutterPlugin, MethodCallHandler, Activ
                     result.success(false)
                 }
             }
-            "action" -> {
-                val action = call.argument<String>("action")
-                Log.e(TAG, "$action")
-                action?.let {
-                    ACTION_NOTIFICATION = it
-                }
-            }
+//            "action" -> {
+//                val action = call.argument<String>("action")
+//                Log.e(TAG, "$action")
+//                action?.let {
+//                    ACTION_NOTIFICATION = it
+//                }
+//            }
             else -> {
                 result.notImplemented()
             }
@@ -193,13 +192,12 @@ class HandleFirebaseNotificationPlugin : FlutterPlugin, MethodCallHandler, Activ
 
         activityBinding.addOnNewIntentListener {
             Log.e(TAG, "IntentListener :${it.extras?.get("name")}")
+//
+//            if (it?.extras?.get("app_status") == "BACKGROUND") {
+//                sendData(it)
+//            }
 
-            if (it?.extras?.get("app_status") == "BACKGROUND") {
-                sendData(it)
-            }
-
-            if (it.action == ACTION_NOTIFICATION) {
-                Log.e(TAG, "${it.action}")
+             Log.e(TAG, "${it.action}")
                 try {
                     if (it.extras?.get("app_status") == "BACKGROUND") {
                         sendData(it)
@@ -210,20 +208,16 @@ class HandleFirebaseNotificationPlugin : FlutterPlugin, MethodCallHandler, Activ
                     Log.e(TAG, "Error ", e)
                 }
                 true
-            } else {
-                false
             }
         }
-    }
 
     private fun sendData(intent: Intent) {
         val dataMap = getDataMap(intent)
-        Log.e(TAG,"$dataMap")
+        Log.e(ContentValues.TAG,"$dataMap")
         try {
             eventChannelSink?.success(dataMap)
-            Log.e(TAG,"Data Sen")
         } catch (e: java.lang.Exception) {
-            Log.e(TAG, "Missing Plugin ${e.printStackTrace()}")
+            Log.e(ContentValues.TAG, "Error while sending data: ${e.printStackTrace()}")
         }
     }
 
@@ -239,14 +233,14 @@ class HandleFirebaseNotificationPlugin : FlutterPlugin, MethodCallHandler, Activ
 
 
     override fun onDetachedFromActivityForConfigChanges() {
-        Log.e(TAG, "onDetachedFromActivityForConfigChanges")
+        Log.e(ContentValues.TAG, "onDetachedFromActivityForConfigChanges")
 
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
         if (intent?.action == ACTION_RESUME) {
             val data = intent.getParcelableExtra<RemoteMessage>(EXTRA_MESSAGE)
-            Log.e(TAG, "${data}")
+            Log.e(ContentValues.TAG, "${data}")
             eventChannelSink?.success(data.data)
         }
     }
