@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "22366005799",
+    "firebase_url": "https://fir-demo-fa6dd.firebaseio.com",
+    "project_id": "fir-demo-fa6dd",
+    "storage_bucket": "fir-demo-fa6dd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22366005799:android:65572f48f74542af553c02",
+        "android_client_info": {
+          "package_name": "com.example.signupfirebase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22366005799-jkne2kmp8iu8u7fg24jct1co5em0tdve.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDB0yEb_9CCu53N_mbjM6tzRCCGDn4RRLQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "22366005799-jkne2kmp8iu8u7fg24jct1co5em0tdve.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22366005799:android:7cc7d0056e98bcb5553c02",
+        "android_client_info": {
+          "package_name": "com.knoxpo.handle_firebase_notification_example"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22366005799-jkne2kmp8iu8u7fg24jct1co5em0tdve.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDB0yEb_9CCu53N_mbjM6tzRCCGDn4RRLQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "22366005799-jkne2kmp8iu8u7fg24jct1co5em0tdve.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
