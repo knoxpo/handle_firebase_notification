@@ -1,3 +1,7 @@
 ## 1.0.0
 
-* TODO: Describe initial release.
+* A flutter plugin to handle firebase notification when app is in Background or Foreground.fl
+
+## 1.0.1
+
+* Bug fixes
