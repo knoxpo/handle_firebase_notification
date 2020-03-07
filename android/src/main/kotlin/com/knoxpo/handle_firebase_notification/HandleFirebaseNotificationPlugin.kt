@@ -5,14 +5,12 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.*
-import android.content.ContentValues.TAG
 import android.graphics.Color
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.firebase.messaging.RemoteMessage
-import com.knoxpo.handle_firebase_notification.HandleFirebaseNotificationPlugin.Companion.ACTION_RESUME
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -43,6 +41,7 @@ class HandleFirebaseNotificationPlugin : FlutterPlugin, MethodCallHandler, Activ
         private var ACTION_NOTIFICATION = "ACTION_NOTIFICATION"
         const val ACTION_RESUME = "ACTION_RESUME"
         const val EXTRA_MESSAGE = "EXTRA_MESSAGE"
+        private const val KEY_GOOGLE_MESSAGE="google.message_id"
     }
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
@@ -72,8 +71,10 @@ class HandleFirebaseNotificationPlugin : FlutterPlugin, MethodCallHandler, Activ
 
                         val receivedIntent = activity?.intent
 
-                        if (receivedIntent?.extras?.get("app_status") == "BACKGROUND" && !isFromHistory) {
-                            sendData(receivedIntent)
+                        receivedIntent?.let { intent ->
+                            if(intent.hasExtra(KEY_GOOGLE_MESSAGE) && !isFromHistory){
+                                sendData(intent)
+                            }
                         }
                     }
 
@@ -192,32 +193,29 @@ class HandleFirebaseNotificationPlugin : FlutterPlugin, MethodCallHandler, Activ
 
         activityBinding.addOnNewIntentListener {
             Log.e(TAG, "IntentListener :${it.extras?.get("name")}")
-//
-//            if (it?.extras?.get("app_status") == "BACKGROUND") {
-//                sendData(it)
-//            }
 
-             Log.e(TAG, "${it.action}")
-                try {
-                    if (it.extras?.get("app_status") == "BACKGROUND") {
-                        sendData(it)
-                    } else {
-                        eventChannelSink?.success("No result to be set")
-                    }
-                } catch (e: java.lang.Exception) {
-                    Log.e(TAG, "Error ", e)
+            Log.e(TAG, "${it.action}")
+            try {
+                if (it.hasExtra(KEY_GOOGLE_MESSAGE)) {
+                    sendData(it)
+                } else {
+                    eventChannelSink?.success("No result to be set")
                 }
-                true
+            } catch (e: java.lang.Exception) {
+                Log.e(TAG, "Error ", e)
             }
+            true
         }
+    }
+
 
     private fun sendData(intent: Intent) {
         val dataMap = getDataMap(intent)
-        Log.e(ContentValues.TAG,"$dataMap")
+        Log.e(TAG, "$dataMap")
         try {
             eventChannelSink?.success(dataMap)
         } catch (e: java.lang.Exception) {
-            Log.e(ContentValues.TAG, "Error while sending data: ${e.printStackTrace()}")
+            Log.e(TAG, "Error while sending data: ${e.printStackTrace()}")
         }
     }
 
@@ -234,7 +232,6 @@ class HandleFirebaseNotificationPlugin : FlutterPlugin, MethodCallHandler, Activ
 
     override fun onDetachedFromActivityForConfigChanges() {
         Log.e(ContentValues.TAG, "onDetachedFromActivityForConfigChanges")
-
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
