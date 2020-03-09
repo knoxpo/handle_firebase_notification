@@ -1,50 +1,49 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:handle_firebase_notification/handle_firebase_notification.dart';
-import 'package:handle_firebase_notification/mixin_firebase_notification_state.dart';
-import 'package:handle_firebase_notification_example/second_screen.dart';
-
-import 'first_screen.dart';
+import 'package:handle_firebase_notification/mixin_firebase_notification_stateless.dart';
 
 void main() => runApp(MyApp());
 
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
-}
+//class MyApp extends StatefulWidget {
+//  @override
+//  _MyAppState createState() => _MyAppState();
+//}
 
-class _MyAppState extends State<MyApp> with FirebaseNotificationStateMixin {
-  Future<void> initialState() async {
-    try {
-      await HandleFirebaseNotification.instance.setAction('ACTION');
-    } catch (error) {
-      print(error.toString());
-    }
-  }
+//class _MyAppState extends State<MyApp> with FirebaseNotificationStateMixin {
+//  @override
+//  @override
+//  Widget build(BuildContext context) {
+//    return StatelessCallbackWidget(
+//      child: MaterialApp(
+//        navigatorObservers: [HandleFirebaseNotification.routeObserver],
+//        initialRoute: '/',
+//        routes: <String, WidgetBuilder>{
+//          "/": (BuildContext context) => FirstScreen(),
+//          "/second": (BuildContext context) => SecondScreen()
+//        },
+//        //navigatorObservers: [routeObserver],
+//      ),
+//      onDataReceived: (data) {
+//        print(data);
+//      },
+//    );
+//  }
+//
+//  @override
+//  void onOpenFromNotification(data) {
+//    print('Main Screen ' + data.toString());
+//  }
+//}
 
-  @override
-  void initState() {
-    super.initState();
-    initialState();
-  }
-
-  @override
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorObservers: [HandleFirebaseNotification.routeObserver],
-      initialRoute: '/',
-      routes: <String, WidgetBuilder>{
-        "/": (BuildContext context) => FirstScreen(),
-        "/second": (BuildContext context) => SecondScreen()
+    return StatelessCallbackWidget(
+      onDataReceived: (data) {
+        print(data);
       },
-      //navigatorObservers: [routeObserver],
+      child: MaterialApp(
+        home: Text('Hello World'),
+      ),
     );
-  }
-
-  @override
-  void onOpenFromNotification(data) {
-    print('Main Screen ' + data.toString());
   }
 }
