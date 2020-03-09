@@ -4,21 +4,22 @@ import 'package:flutter/material.dart';
 
 import 'handle_firebase_notification.dart';
 
-class StatelessCallbackWidget extends StatefulWidget {
+class FirebaseNotificationCallbackWidget extends StatefulWidget {
   final Function onDataReceived;
   final Widget child;
 
-  StatelessCallbackWidget({
+  FirebaseNotificationCallbackWidget({
     @required this.onDataReceived,
     @required this.child,
   });
 
   @override
-  _StatelessCallbackWidgetState createState() =>
-      _StatelessCallbackWidgetState();
+  _FirebaseNotificationCallbackWidgetState createState() =>
+      _FirebaseNotificationCallbackWidgetState();
 }
 
-class _StatelessCallbackWidgetState extends State<StatelessCallbackWidget> {
+class _FirebaseNotificationCallbackWidgetState
+    extends State<FirebaseNotificationCallbackWidget> {
   StreamSubscription _stream;
 
   @override
