@@ -42,6 +42,8 @@ class HandleFirebaseNotificationPlugin : FlutterPlugin, MethodCallHandler, Activ
         const val ACTION_RESUME = "ACTION_RESUME"
         const val EXTRA_MESSAGE = "EXTRA_MESSAGE"
         private const val KEY_GOOGLE_MESSAGE="google.message_id"
+
+        private const val _IS_INTERACTING_KEY = "is_interacting"
     }
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
@@ -237,7 +239,9 @@ class HandleFirebaseNotificationPlugin : FlutterPlugin, MethodCallHandler, Activ
     override fun onReceive(context: Context?, intent: Intent?) {
         if (intent?.action == ACTION_RESUME) {
             val data = intent.getParcelableExtra<RemoteMessage>(EXTRA_MESSAGE)
+
             Log.e(ContentValues.TAG, "${data}")
+            data.data[_IS_INTERACTING_KEY] = "true"
             eventChannelSink?.success(data.data)
         }
     }

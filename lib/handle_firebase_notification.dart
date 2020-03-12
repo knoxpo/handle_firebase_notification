@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:handle_firebase_notification/notification_open.dart';
 
 class HandleFirebaseNotification {
   final RouteObserver<PageRoute<dynamic>> _routeObserver =
@@ -11,11 +12,13 @@ class HandleFirebaseNotification {
 
   EventChannel _eventChannel;
 
-  StreamController _communicator = StreamController();
+  StreamController<Map<dynamic, dynamic>> _communicator = StreamController();
 
-  Stream<dynamic> _stream;
+  Stream<Map<dynamic, dynamic>> _stream;
 
   static HandleFirebaseNotification _instance;
+
+  static const _IS_INTERACTING_KEY = 'is_interacting';
 
   static HandleFirebaseNotification get instance {
     return HandleFirebaseNotification();
@@ -25,7 +28,7 @@ class HandleFirebaseNotification {
     return HandleFirebaseNotification()._routeObserver;
   }
 
-  static get communicatorStream {
+  static Stream<Map<dynamic, dynamic>> get communicatorStream {
     return HandleFirebaseNotification()._stream;
   }
 
@@ -44,11 +47,19 @@ class HandleFirebaseNotification {
   @visibleForTesting
   HandleFirebaseNotification.private(this._channel, this._eventChannel) {
     _eventChannel.receiveBroadcastStream().listen((data) {
+      print(data);
+
       _communicator.sink.add(data);
     }, onDone: () {
       _communicator.close();
     });
     _stream = _communicator.stream.asBroadcastStream();
+  }
+
+  static handleNotification(
+      Map<dynamic, dynamic> data, NotificationOpen handler) {
+    final isInteracting = data.remove(_IS_INTERACTING_KEY) != null;
+    handler.onOpenFromNotification(data, isInteracting);
   }
 
   Future<String> showNotification(
@@ -60,20 +71,6 @@ class HandleFirebaseNotification {
     };
     try {
       return await _channel.invokeMethod('notification', details);
-    } catch (error) {
-      print(error.toString());
-      throw error;
-    }
-  }
-
-  Future<void> setAction(String action) async {
-    try {
-      await _channel.invokeMethod(
-        'action',
-        {
-          'action': action,
-        },
-      );
     } catch (error) {
       print(error.toString());
       throw error;

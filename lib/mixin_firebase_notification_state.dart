@@ -1,17 +1,19 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:handle_firebase_notification/notification_open.dart';
 
 import 'handle_firebase_notification.dart';
 
-mixin FirebaseNotificationStateMixin<T extends StatefulWidget> on State<T> {
+mixin FirebaseNotificationStateMixin<T extends StatefulWidget> on State<T>
+    implements NotificationOpen {
   StreamSubscription _stream;
 
   void _startListening() {
     try {
       _stream = HandleFirebaseNotification.communicatorStream.listen((data) {
         print(data.toString());
-        onOpenFromNotification(data);
+        HandleFirebaseNotification.handleNotification(data, this);
       }, onDone: () {
         print('done');
       });
@@ -19,8 +21,6 @@ mixin FirebaseNotificationStateMixin<T extends StatefulWidget> on State<T> {
       print("Stream Error: " + error.toString());
     }
   }
-
-  void onOpenFromNotification(dynamic data);
 
   @override
   void initState() {

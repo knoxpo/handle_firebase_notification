@@ -50,8 +50,7 @@ class _FirstScreenState extends State<FirstScreen>
   }
 
   @override
-  void onOpenFromNotification(data) {
+  void onOpenFromNotification(data, bool isInteracting) {
     print(data);
-    //navigate();
   }
 }

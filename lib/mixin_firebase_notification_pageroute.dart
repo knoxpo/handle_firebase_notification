@@ -1,18 +1,19 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import 'package:handle_firebase_notification/notification_open.dart';
 
 import 'handle_firebase_notification.dart';
 
 mixin FirebaseNotificationPageRouteMixin<T extends StatefulWidget> on State<T>
-    implements RouteAware {
+    implements RouteAware, NotificationOpen {
   StreamSubscription _stream;
 
   void _startListening() {
     try {
       _stream = HandleFirebaseNotification.communicatorStream.listen((data) {
         print(data.toString());
-        onOpenFromNotification(data);
+        HandleFirebaseNotification.handleNotification(data, this);
       }, onDone: () {
         print('done');
       });
@@ -24,8 +25,6 @@ mixin FirebaseNotificationPageRouteMixin<T extends StatefulWidget> on State<T>
   void _stopListening() {
     _stream.cancel();
   }
-
-  void onOpenFromNotification(dynamic data);
 
   @override
   void didChangeDependencies() {

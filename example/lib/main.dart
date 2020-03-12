@@ -27,8 +27,8 @@ class _MyAppState extends State<MyApp> with FirebaseNotificationStateMixin {
   }
 
   @override
-  void onOpenFromNotification(data) {
-    print('Main Screen ' + data.toString());
+  void onOpenFromNotification(data, bool isInteracting) {
+    print(isInteracting);
   }
 }
 

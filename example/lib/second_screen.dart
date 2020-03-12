@@ -33,7 +33,7 @@ class _SecondScreenState extends State<SecondScreen>
   }
 
   @override
-  void onOpenFromNotification(data) {
+  void onOpenFromNotification(data, bool isInteracting) {
     print(data);
     setState(() {
       _data = data['name'].toString();
