@@ -12,6 +12,8 @@ class HandleFirebaseNotification {
 
   EventChannel _eventChannel;
 
+  EventChannel _tokenEventChannel;
+
   StreamController<Map<dynamic, dynamic>> _communicator = StreamController();
 
   Stream<Map<dynamic, dynamic>> _stream;
@@ -38,14 +40,23 @@ class HandleFirebaseNotification {
           const MethodChannel('handle_notification_method');
       final EventChannel eventChannel =
           const EventChannel('handle_notification_event');
-      _instance =
-          HandleFirebaseNotification.private(methodChannel, eventChannel);
+      final EventChannel tokenChannel =
+          const EventChannel('handle_firebase_notification_token');
+      _instance = HandleFirebaseNotification.private(
+        methodChannel,
+        eventChannel,
+        tokenChannel,
+      );
     }
     return _instance;
   }
 
   @visibleForTesting
-  HandleFirebaseNotification.private(this._channel, this._eventChannel) {
+  HandleFirebaseNotification.private(
+    this._channel,
+    this._eventChannel,
+    this._tokenEventChannel,
+  ) {
     _eventChannel.receiveBroadcastStream().listen((data) {
       print(data);
 

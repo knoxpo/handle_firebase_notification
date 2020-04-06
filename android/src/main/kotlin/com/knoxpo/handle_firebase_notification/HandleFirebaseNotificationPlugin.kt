@@ -10,6 +10,7 @@ import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.messaging.RemoteMessage
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -32,6 +33,9 @@ class HandleFirebaseNotificationPlugin : FlutterPlugin, MethodCallHandler, Activ
     private var eventChannel: EventChannel? = null
     var eventChannelSink: EventChannel.EventSink? = null
 
+    private var onTokenEventChannel: EventChannel? = null
+    var tokenEventChannelSink: EventChannel.EventSink? = null
+
     companion object {
 
         private val TAG = HandleFirebaseNotificationPlugin::class.java.simpleName
@@ -39,12 +43,16 @@ class HandleFirebaseNotificationPlugin : FlutterPlugin, MethodCallHandler, Activ
         private const val METHOD_CHANNEL = "handle_notification_method"
         private const val EVENT_CHANNEL = "handle_notification_event"
         private var ACTION_NOTIFICATION = "ACTION_NOTIFICATION"
-        const val ACTION_RESUME = "ACTION_RESUME"
+        const val ACTION_MESSAGE = "ACTION_RESUME"
         const val EXTRA_MESSAGE = "EXTRA_MESSAGE"
-        private const val KEY_GOOGLE_MESSAGE="google.message_id"
-
+        const val ACTION_TOKEN = "ACTION_TOKEN"
+        const val EXTRA_TOKEN = "EXTRA_TOKEN"
+        private const val KEY_GOOGLE_MESSAGE = "google.message_id"
         private const val _IS_INTERACTING_KEY = "is_interacting"
+
+        private const val EVENT_TOKEN = "handle_firebase_notification_token"
     }
+
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         context = flutterPluginBinding.applicationContext
@@ -57,12 +65,16 @@ class HandleFirebaseNotificationPlugin : FlutterPlugin, MethodCallHandler, Activ
         manager.registerReceiver(
                 this,
                 IntentFilter().apply {
-                    addAction(ACTION_RESUME)
+                    addAction(ACTION_MESSAGE)
+                    addAction(ACTION_TOKEN)
                 }
         )
 
         methodChannel = MethodChannel(flutterPluginBinding.binaryMessenger, METHOD_CHANNEL)
         eventChannel = EventChannel(flutterPluginBinding.binaryMessenger, EVENT_CHANNEL)
+
+        onTokenEventChannel= EventChannel(flutterPluginBinding.binaryMessenger, EVENT_TOKEN)
+
         eventChannel?.setStreamHandler(
                 object : EventChannel.StreamHandler {
                     override fun onListen(arguments: Any?, event: EventChannel.EventSink?) {
@@ -74,7 +86,7 @@ class HandleFirebaseNotificationPlugin : FlutterPlugin, MethodCallHandler, Activ
                         val receivedIntent = activity?.intent
 
                         receivedIntent?.let { intent ->
-                            if(intent.hasExtra(KEY_GOOGLE_MESSAGE) && !isFromHistory){
+                            if (intent.hasExtra(KEY_GOOGLE_MESSAGE) && !isFromHistory) {
                                 sendData(intent)
                             }
                         }
@@ -85,8 +97,20 @@ class HandleFirebaseNotificationPlugin : FlutterPlugin, MethodCallHandler, Activ
                     }
                 }
         )
-        methodChannel?.setMethodCallHandler(this)
 
+        onTokenEventChannel?.setStreamHandler(
+                object : EventChannel.StreamHandler{
+                    override fun onListen(arguments: Any?, event: EventChannel.EventSink?) {
+                        tokenEventChannelSink=event
+                    }
+
+                    override fun onCancel(p0: Any?) {
+
+                    }
+                }
+        )
+
+        methodChannel?.setMethodCallHandler(this)
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
@@ -96,9 +120,6 @@ class HandleFirebaseNotificationPlugin : FlutterPlugin, MethodCallHandler, Activ
     override fun onMethodCall(call: MethodCall, result: Result) {
         when (call.method) {
 
-//            "notification" -> {
-//                showNotification("Pratik", "abcgmail", "Hello")
-//            }
             METHOD_OPEN_SCREEN -> {
                 val isFromHistory = (activity!!.intent!!.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0
 
@@ -108,13 +129,6 @@ class HandleFirebaseNotificationPlugin : FlutterPlugin, MethodCallHandler, Activ
                     result.success(false)
                 }
             }
-//            "action" -> {
-//                val action = call.argument<String>("action")
-//                Log.e(TAG, "$action")
-//                action?.let {
-//                    ACTION_NOTIFICATION = it
-//                }
-//            }
             else -> {
                 result.notImplemented()
             }
@@ -212,6 +226,7 @@ class HandleFirebaseNotificationPlugin : FlutterPlugin, MethodCallHandler, Activ
 
 
     private fun sendData(intent: Intent) {
+        Log.e(TAG, "sndData : ${intent.action}")
         val dataMap = getDataMap(intent)
         Log.e(TAG, "$dataMap")
         try {
@@ -237,12 +252,21 @@ class HandleFirebaseNotificationPlugin : FlutterPlugin, MethodCallHandler, Activ
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
-        if (intent?.action == ACTION_RESUME) {
-            val data = intent.getParcelableExtra<RemoteMessage>(EXTRA_MESSAGE)
+        Log.e(TAG, "onRecieve")
 
+        if (intent?.action == null) {
+            return
+        }
+
+        if (intent.action == ACTION_MESSAGE) {
+            val data = intent.getParcelableExtra<RemoteMessage>(EXTRA_MESSAGE)
             Log.e(ContentValues.TAG, "${data}")
             data.data[_IS_INTERACTING_KEY] = "true"
             eventChannelSink?.success(data.data)
+        } else if (intent.action == ACTION_TOKEN) {
+            val token = intent.getStringExtra(EXTRA_TOKEN)
+            Log.e(TAG, "onRecive: Token $token")
+            tokenEventChannelSink?.success(token)
         }
     }
 }
