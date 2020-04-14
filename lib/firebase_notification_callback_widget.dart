@@ -18,8 +18,7 @@ class FirebaseNotificationCallbackWidget extends StatefulWidget {
       _FirebaseNotificationCallbackWidgetState();
 }
 
-class _FirebaseNotificationCallbackWidgetState
-    extends State<FirebaseNotificationCallbackWidget> {
+class _FirebaseNotificationCallbackWidgetState extends State<FirebaseNotificationCallbackWidget> {
   StreamSubscription _stream;
 
   @override
@@ -35,7 +34,7 @@ class _FirebaseNotificationCallbackWidgetState
 
   void _startListening() {
     try {
-      _stream = HandleFirebaseNotification.communicatorStream.listen((data) {
+      _stream = HandleFirebaseNotification.notificationCommunicator.listen((data) {
         print(data.toString());
         widget.onDataReceived(data);
       }, onDone: () {

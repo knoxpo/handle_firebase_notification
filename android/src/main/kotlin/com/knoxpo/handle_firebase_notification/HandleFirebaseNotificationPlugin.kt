@@ -78,7 +78,6 @@ class HandleFirebaseNotificationPlugin : FlutterPlugin, MethodCallHandler, Activ
         eventChannel?.setStreamHandler(
                 object : EventChannel.StreamHandler {
                     override fun onListen(arguments: Any?, event: EventChannel.EventSink?) {
-                        Log.d(TAG, "on Listen")
                         eventChannelSink = event
 
                         val isFromHistory = (activity!!.intent!!.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0
@@ -114,7 +113,7 @@ class HandleFirebaseNotificationPlugin : FlutterPlugin, MethodCallHandler, Activ
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
-        LocalBroadcastManager.getInstance(binding.applicationContext).unregisterReceiver(this);
+        LocalBroadcastManager.getInstance(binding.applicationContext).unregisterReceiver(this)
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
@@ -129,6 +128,10 @@ class HandleFirebaseNotificationPlugin : FlutterPlugin, MethodCallHandler, Activ
                     result.success(false)
                 }
             }
+            "notification" -> {
+                showNotification("himnshu", "abc", "Hello")
+            }
+
             else -> {
                 result.notImplemented()
             }
@@ -189,7 +192,6 @@ class HandleFirebaseNotificationPlugin : FlutterPlugin, MethodCallHandler, Activ
             throw e
         }
     }
-
 
     override fun onDetachedFromActivity() {
         Log.e(TAG, "onDetachedFromActivity")
@@ -264,9 +266,13 @@ class HandleFirebaseNotificationPlugin : FlutterPlugin, MethodCallHandler, Activ
             data.data[_IS_INTERACTING_KEY] = "true"
             eventChannelSink?.success(data.data)
         } else if (intent.action == ACTION_TOKEN) {
-            val token = intent.getStringExtra(EXTRA_TOKEN)
-            Log.e(TAG, "onRecive: Token $token")
-            tokenEventChannelSink?.success(token)
+            try {
+                val token = intent.getStringExtra(EXTRA_TOKEN)
+                Log.e(TAG, "onRecive: Token $token")
+                tokenEventChannelSink?.success(token)
+            }catch (error : Exception){
+                Log.e("onRecive:", error.toString())
+            }
         }
     }
 }

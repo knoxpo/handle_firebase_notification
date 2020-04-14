@@ -30,6 +30,11 @@ class _MyAppState extends State<MyApp> with FirebaseNotificationStateMixin {
   void onOpenFromNotification(data, bool isInteracting) {
     print(data);
   }
+
+  @override
+  void fireBaseToken(data) {
+    print('Main Screen Token is ${data.toString()}');
+  }
 }
 
 //class MyApp extends StatelessWidget {

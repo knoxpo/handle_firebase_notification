@@ -40,4 +40,9 @@ class _SecondScreenState extends State<SecondScreen>
     });
     print('Hello Flutter');
   }
+
+  @override
+  void fireBaseToken(data) {
+    print('Second Screen Token is ${data.toString()}');
+  }
 }

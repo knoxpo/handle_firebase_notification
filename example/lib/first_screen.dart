@@ -7,8 +7,7 @@ class FirstScreen extends StatefulWidget {
   _FirstScreenState createState() => _FirstScreenState();
 }
 
-class _FirstScreenState extends State<FirstScreen>
-    with FirebaseNotificationPageRouteMixin {
+class _FirstScreenState extends State<FirstScreen> with FirebaseNotificationPageRouteMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,5 +51,10 @@ class _FirstScreenState extends State<FirstScreen>
   @override
   void onOpenFromNotification(data, bool isInteracting) {
     print(data);
+  }
+
+  @override
+  void fireBaseToken(data) {
+   print('First Screen data ${data.toString()}');
   }
 }
