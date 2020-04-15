@@ -78,6 +78,7 @@ class HandleFirebaseNotificationPlugin : FlutterPlugin, MethodCallHandler, Activ
         eventChannel?.setStreamHandler(
                 object : EventChannel.StreamHandler {
                     override fun onListen(arguments: Any?, event: EventChannel.EventSink?) {
+                        Log.e("Notification Event Channel","initialized")
                         eventChannelSink = event
 
                         val isFromHistory = (activity!!.intent!!.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0
@@ -100,6 +101,7 @@ class HandleFirebaseNotificationPlugin : FlutterPlugin, MethodCallHandler, Activ
         onTokenEventChannel?.setStreamHandler(
                 object : EventChannel.StreamHandler{
                     override fun onListen(arguments: Any?, event: EventChannel.EventSink?) {
+                        Log.e("Token Event Channel","initialized")
                         tokenEventChannelSink=event
                     }
 

@@ -12,28 +12,21 @@ mixin FirebaseNotificationPageRouteMixin<T extends StatefulWidget> on State<T>
 
   void _startListening() {
   
-    try {
+   
       _notificationDataStream = HandleFirebaseNotification.notificationCommunicator.listen((data) {
         print(data.toString());
         HandleFirebaseNotification.handleNotification(data, this);
       }, onDone: () {
         print('done');
       });
-    } catch (error) {
-      print("Stream Error: " + error.toString());
-    }
-  
-    try {
+   
       _tokenStream = HandleFirebaseNotification.tokenCommunicator.listen((data) {
         print('in mixin --------------> ${data}');
         HandleFirebaseNotification.getFireBaseToken(data, this);
       }, onDone: () {
         print('done');
       });
-    } catch (error) {
-      print("Token Error: " + error.toString());
-    }
-  
+    
   
   }
 
